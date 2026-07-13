@@ -73,3 +73,6 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Content 폴더 안의 모든 에셋 및 맵 제외 (용량 방지)
+Content/
