@@ -4,6 +4,8 @@
 #include "MainLevel/UI/MainLobbyUI/UW_MainLobbyUI.h"
 
 #include "Components/WidgetSwitcher.h"
+#include "MainLevel/UI/PanelQuitGame/UW_PanelQuitGame.h"
+#include "MainLevel/UI/PanelSetting/UW_PanelSetting.h"
 #include "MainLevel/UI/TopTab/UW_TopTab.h"
 
 void UUW_MainLobbyUI::NativeConstruct()
@@ -16,6 +18,9 @@ void UUW_MainLobbyUI::NativeConstruct()
 		TopTab->OnTabButtonClicked.AddUniqueDynamic(this,&ThisClass::OnTopTabButtonClicked);
 	}
 #pragma endregion
+	
+	PanelSetting->SetVisibility(ESlateVisibility::Collapsed);
+	PanelQuitGame->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UUW_MainLobbyUI::NativeDestruct()
@@ -32,58 +37,41 @@ void UUW_MainLobbyUI::NativeDestruct()
 
 void UUW_MainLobbyUI::OnTopTabButtonClicked(ETabEnum TabIndex)
 {
-	// 스위처가 Valid한지 먼저 확인하는 방어 코드
 	if (!MenuSwitcher)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[MainLobbyUI] MenuSwitcher is nullptr!"));
 		return;
 	}
-
+    
 	switch (TabIndex)
 	{
 	case ETabEnum::Home:
-		UE_LOG(LogTemp, Log, TEXT("[MainLobbyUI] Switched to Home Tab (Index 0)"));
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Tab Changed: Home"));
-		}
-		MenuSwitcher->SetActiveWidgetIndex(0);
-		break;
-
 	case ETabEnum::Characters:
-		UE_LOG(LogTemp, Log, TEXT("[MainLobbyUI] Switched to Characters Tab (Index 1)"));
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, TEXT("Tab Changed: Characters"));
-		}
-		MenuSwitcher->SetActiveWidgetIndex(1);
-		break;
-
 	case ETabEnum::Matches:
-		UE_LOG(LogTemp, Log, TEXT("[MainLobbyUI] Switched to Matches Tab (Index 2)"));
-		if (GEngine)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("Tab Changed: Matches"));
+			uint8 WidgetIndex = static_cast<uint8>(TabIndex);
+			MenuSwitcher->SetActiveWidgetIndex(WidgetIndex);
+          
+			UE_LOG(LogTemp, Log, TEXT("[MainLobbyUI] Switched Tab to Index: %d"), WidgetIndex);
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Tab Changed: Index %d"), WidgetIndex));
+			}
 		}
-		MenuSwitcher->SetActiveWidgetIndex(2);
 		break;
 
 	case ETabEnum::Settings:
-		UE_LOG(LogTemp, Log, TEXT("[MainLobbyUI] Settings Opened"));
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("Tab Changed: Settings Popup"));
-		}
 		ShowSettingMenu();
+		UE_LOG(LogTemp,Warning,TEXT("[MainLobbyUI] Settings Pop Up"));
+		if (GEngine) GEngine->AddOnScreenDebugMessage(-1,2.f,FColor::Green,TEXT("Settings Pop Up"));
 		break;
+
 	case ETabEnum::QuitGame:
-		UE_LOG(LogTemp, Log, TEXT("[MainLobbyUI] QUIT GAME POPUP"));
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Tab Changed: Quit Game Popup"));
-		}
 		ShowQuitGamePopUp();
+		UE_LOG(LogTemp,Warning,TEXT("[MainLobbyUI] Quit Game Pop Up"));
+		if (GEngine) GEngine->AddOnScreenDebugMessage(-1,2.f,FColor::Green,TEXT("Quit Game Pop Up"));
 		break;
+
 	default:
 		UE_LOG(LogTemp, Warning, TEXT("[MainLobbyUI] Invalid TabIndex Passed!"));
 		break;
@@ -92,9 +80,11 @@ void UUW_MainLobbyUI::OnTopTabButtonClicked(ETabEnum TabIndex)
 
 void UUW_MainLobbyUI::ShowSettingMenu()
 {
+	PanelSetting->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UUW_MainLobbyUI::ShowQuitGamePopUp()
 {
+	PanelQuitGame->SetVisibility(ESlateVisibility::Visible);
 }
 
